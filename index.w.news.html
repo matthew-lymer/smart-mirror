@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=360, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600" rel="stylesheet">
+        <style>
+            html{
+                background: #000;
+            }
+
+            body{
+                padding:5px;
+                margin:0;
+                background:#000;
+                box-sizing: border-box;
+                font-weight:300;
+                font-family: 'Dosis', sans-serif;
+                font-size:20px;
+                color:#fff;
+                line-height:20px;
+                zoom:1.15;
+            }
+
+            h1, h2, h3{
+                font-size:170px;
+                line-height:170px;
+                font-weight:300;
+                margin:0;
+                padding:0;
+                box-sizing: border-box;
+                display: block;
+
+            }
+
+            h2{
+                font-size:110px;
+                line-height:90px;
+                display: inline-block;
+            }
+
+            h3{
+                font-size:60px;
+                font-weight:400;
+                line-height:80px;
+            }
+
+            #weather{
+                position: relative;
+                margin-top:40px;
+            }
+
+            #weather #status{
+                font-size: 24px;
+                line-height: 24px;
+                left:0;
+                top:100%;
+                position: absolute;
+                font-weight: 500
+            }
+
+            #weather #icon{
+                padding-right: 20px;
+            }
+
+            .weather{
+                vertical-align: middle;
+            }
+
+            iframe{
+                float: right;
+                width: 335px;
+                height: 515px;
+                border:none;
+            }
+        </style>
+    </head>
+    <body>
+    <button id="full" onclick="document.documentElement.webkitRequestFullScreen();this.style='display:none;'" style="position:absolute;top:100px;left:450px;z-index:99999;height:100px;width:100px;">FullScreen</button>
+        <iframe src="news.html" width="500" height="600"></iframe>
+        <h1 id="time"></h1>
+        <h3 id="date"></h3>
+        <div id="weather">
+            <img id="icon" class="weather" src="" width="140" height="140" />
+            <h2 id="temp" class="weather"></h2>
+            <span id="status" class="weather"></span>
+        </div>
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script>
+            function td(x){
+                if(x < 10){
+                    x = "0" + x;
+                }
+                return x;
+            }
+
+            function dow(x){
+                var y;
+
+                switch(x) {
+                    case 0:
+                        y = "Sun";
+                        break;
+                    case 1:
+                        y = "Mon";
+                        break;
+                    case 2:
+                        y = "Tue";
+                        break;
+                    case 3:
+                        y = "Wed";
+                        break;
+                    case 4:
+                        y = "Thu";
+                        break;
+                    case 5:
+                        y = "Fri";
+                        break;
+                    case 6:
+                        y = "Sat";
+                        break;
+                }
+                return y;
+            }
+
+            function moy(x){
+                var y;
+
+                switch(x) {
+                    case 0:
+                        y = "Jan";
+                        break;
+                    case 1:
+                        y = "Feb";
+                        break;
+                    case 2:
+                        y = "Mar";
+                        break;
+                    case 3:
+                        y = "Apr";
+                        break;
+                    case 4:
+                        y = "May";
+                        break;
+                    case 5:
+                        y = "Jun";
+                        break;
+                    case 6:
+                        y = "Jul";
+                        break;
+                    case 7:
+                        y = "Aug";
+                        break;
+                    case 8:
+                        y = "Sep";
+                        break;
+                    case 9:
+                        y = "Oct";
+                        break;
+                    case 10:
+                        y = "Nov";
+                        break;
+                    case 11:
+                        y = "Dec";
+                        break;
+                }
+                return y;
+            }
+
+            function ftc(x){
+                return ((x - 32) * 5/9).toFixed(0);
+            }
+
+            function clock(){
+                var datetime = new Date();
+                var time = td(datetime.getHours()) + ":" + td(datetime.getMinutes());
+                var date = dow(datetime.getDay()) + " " + datetime.getDate() + " " + moy(datetime.getMonth());
+
+                $("#time").text(time);
+                $("#date").text(date);
+            }
+
+            function weather(){
+                $.get( "https://query.yahooapis.com/v1/public/yql?q=select item.condition from weather.forecast where woeid = 25093&format=json", function( data ) {
+                    $("#icon.weather").attr("src","images/weather-icons/"+data.query.results.channel.item.condition.code+".svg");
+                    $("#temp.weather").html(ftc(data.query.results.channel.item.condition.temp) + "&#176;");
+                    $("#status.weather").html("King's Lynn, UK &nbsp;&nbsp; - &nbsp;&nbsp; " + data.query.results.channel.item.condition.text);
+                });
+            }
+
+            var clockInterval = setInterval(function(){
+                clock();
+            },500); //Every 1/2 Second, check time
+
+            var weatherInterval = setInterval(function(){
+                weather();
+            },1800000); //Every 30 Minutes, check weather
+
+            clock();
+            weather();
+        </script>
+    </body>
+</html>
